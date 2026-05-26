@@ -1,0 +1,112 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Daily Account Triage</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet" />
+  <style>
+    :root { color-scheme: dark; }
+    html, body { background-color: #0a0a0a; }
+    body {
+      font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+      -webkit-font-smoothing: antialiased;
+      -moz-osx-font-smoothing: grayscale;
+    }
+  </style>
+</head>
+<body class="text-neutral-100 min-h-screen">
+  <div class="max-w-7xl mx-auto px-4 sm:px-6 py-8">
+    <header class="mb-8">
+      <h1 class="text-2xl font-semibold tracking-tight">Daily Account Triage</h1>
+      <p class="text-sm text-neutral-500 mt-1">Performance-Status aller Accounts · Stand: gestern</p>
+    </header>
+
+    <main id="board" class="grid grid-cols-1 md:grid-cols-3 gap-6"></main>
+  </div>
+
+  <script>
+    const accounts = {
+      rot: {
+        label: "Rot",
+        dot: "#ef4444",
+        border: "rgba(239, 68, 68, 0.45)",
+        heading: "text-red-400",
+        items: [
+          { name: "Lederwerk Berlin", roas: 1.1, spend: 2840, note: "ROAS zweiten Tag unter 1.5 – Budget gedrosselt." },
+          { name: "Nordfein Kaffee", roas: 0.9, spend: 1920, note: "Top-Kampagne ausgeliefert, keine Conversions seit 18 Uhr." },
+          { name: "Almhof Naturkosmetik", roas: 1.3, spend: 3450, note: "Tracking-Lücke vermutet, Pixel-Events fehlen." },
+          { name: "Strandgut Mode", roas: 1.0, spend: 2110, note: "CPMs +40% nach Audience-Wechsel – zurückrollen." },
+        ],
+      },
+      gelb: {
+        label: "Gelb",
+        dot: "#eab308",
+        border: "rgba(234, 179, 8, 0.45)",
+        heading: "text-yellow-400",
+        items: [
+          { name: "Tannenhain Outdoor", roas: 2.1, spend: 4180, note: "Stabil, aber Frequenz steigt – Creatives erneuern." },
+          { name: "Velora Schmuck", roas: 1.9, spend: 1560, note: "Knapp unter Ziel-ROAS 2.0, beobachten." },
+          { name: "Hofgut Feinkost", roas: 2.3, spend: 2750, note: "Saisonpeak abgeflacht, Budget halten." },
+          { name: "Bruno & Söhne", roas: 2.0, spend: 3320, note: "Neue Landingpage live, erste Daten gemischt." },
+        ],
+      },
+      gruen: {
+        label: "Grün",
+        dot: "#22c55e",
+        border: "rgba(34, 197, 94, 0.45)",
+        heading: "text-green-400",
+        items: [
+          { name: "Edelweiß Sportswear", roas: 4.2, spend: 5120, note: "Skaliert sauber, Budget +15% freigegeben." },
+          { name: "Küstenglück Interior", roas: 3.8, spend: 2640, note: "Bestseller-Kampagne läuft rund, keine Eingriffe." },
+          { name: "Morgentau Tee", roas: 5.1, spend: 1890, note: "Bestes ROAS der Woche, Lager prüfen." },
+          { name: "Stadtkind Sneaker", roas: 3.5, spend: 4470, note: "Retargeting performt, neue Zielgruppe testen." },
+        ],
+      },
+    };
+
+    const eur = new Intl.NumberFormat("de-DE", { style: "currency", currency: "EUR", maximumFractionDigits: 0 });
+    const num = new Intl.NumberFormat("de-DE", { minimumFractionDigits: 1, maximumFractionDigits: 1 });
+
+    function metric(value, caption) {
+      return `
+        <div class="flex-1">
+          <div class="text-sm font-semibold tabular-nums">${value}</div>
+          <div class="text-[10px] uppercase tracking-wide text-neutral-500 mt-0.5">${caption}</div>
+        </div>`;
+    }
+
+    function card(item, border) {
+      return `
+        <div class="rounded-lg bg-neutral-900/60 border p-4" style="border-color:${border}">
+          <div class="font-semibold leading-tight">${item.name}</div>
+          <div class="flex gap-3 mt-3">
+            ${metric(num.format(item.roas), "ROAS")}
+            ${metric(eur.format(item.spend), "Spend")}
+            ${metric("gestern", "Zeitraum")}
+          </div>
+          <p class="text-xs text-neutral-500 mt-3 leading-snug">${item.note}</p>
+        </div>`;
+    }
+
+    function column(col) {
+      const cards = col.items.map((i) => card(i, col.border)).join("");
+      return `
+        <section>
+          <h2 class="flex items-center gap-2 text-sm font-semibold mb-4">
+            <span class="inline-block w-2.5 h-2.5 rounded-full" style="background:${col.dot}"></span>
+            <span class="${col.heading}">${col.label}</span>
+            <span class="text-neutral-500 font-normal">(${col.items.length})</span>
+          </h2>
+          <div class="space-y-3">${cards}</div>
+        </section>`;
+    }
+
+    document.getElementById("board").innerHTML =
+      [accounts.rot, accounts.gelb, accounts.gruen].map(column).join("");
+  </script>
+</body>
+</html>
