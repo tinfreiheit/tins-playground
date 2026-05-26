@@ -19,6 +19,13 @@
   </style>
 </head>
 <body class="text-neutral-100 min-h-screen">
+  <header class="sticky top-0 z-50 bg-[#0a0a0a]/85 backdrop-blur border-b border-neutral-800">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 h-14 flex items-center justify-between">
+      <span class="font-semibold tracking-tight">Freiheit Media Daily Triage</span>
+      <span id="today" class="text-sm text-neutral-400 tabular-nums"></span>
+    </div>
+  </header>
+
   <div class="max-w-7xl mx-auto px-4 sm:px-6 py-8">
     <header class="mb-8">
       <h1 class="text-2xl font-semibold tracking-tight">Daily Account Triage</h1>
@@ -107,6 +114,10 @@
 
     document.getElementById("board").innerHTML =
       [accounts.rot, accounts.gelb, accounts.gruen].map(column).join("");
+
+    document.getElementById("today").textContent = new Date().toLocaleDateString("de-DE", {
+      weekday: "long", day: "2-digit", month: "long", year: "numeric",
+    });
   </script>
 </body>
 </html>
